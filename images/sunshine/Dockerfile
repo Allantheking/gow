@@ -1,13 +1,8 @@
 # syntax=docker/dockerfile:1.4
-ARG BASE_APP_IMAGE
 ARG BASE=ubuntu
 ARG TAG=24.04
 
-######################################
-FROM lizardbyte/sunshine:latest AS sunshine-image
-
-# hadolint ignore=DL3006
-FROM ${BASE_APP_IMAGE} AS sunshine-base
+FROM ${BASE}:${TAG} AS base
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -61,8 +56,10 @@ apt-get clean
 rm -rf /var/lib/apt/lists/*
 _ARCH_DEPS
 
-# Install Sunshine using the official .deb package
-RUN --mount=type=bind,from=sunshine-image,source=/sunshine.deb,target=/sunshine.deb <<_INSTALL_SUNSHINE
+# Example of installing Sunshine from a hypothetical deb package
+# Replace with the actual source or method of installation
+COPY sunshine.deb /sunshine.deb
+RUN <<_INSTALL_SUNSHINE
 #!/bin/bash
 set -e
 apt-get update -y
@@ -91,7 +88,7 @@ COPY configs/apps.json /cfg/apps.json
 
 COPY --chmod=777 scripts/startup.sh /opt/gow/startup-app.sh
 
-# Port configuration taken from https://github.com/moonlight-stream/moonlight-docs/wiki/Setup-Guide#manual-port-forwarding-advanced
+# Port configuration
 EXPOSE 47984-47990/tcp 48010 48010/udp 47998-48000/udp
 
 # entrypoint
