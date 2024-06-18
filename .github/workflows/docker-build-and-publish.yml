@@ -35,8 +35,6 @@ jobs:
     steps:
       - name: Validate inputs
         shell: bash
-        # Currently GitHub does _not_ validate that required inputs are actually given :-(
-        # see: https://github.com/actions/runner/issues/1070
         run: |
           # image name is always required
           [[ "${{ inputs.image_name }}" ]] || {
@@ -69,7 +67,7 @@ jobs:
           PUSH=false
 
           if [ -n "${{ secrets.DOCKERHUB_TOKEN }}" ]; then
-            IMAGES="gameonwhales/${{ inputs.image_name }}"
+            IMAGES="kyuubi2709/${{ inputs.image_name }}"
             PUSH=true
             echo "has_docker_token=true" >> $GITHUB_ENV
           fi
@@ -98,18 +96,15 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          # list of Docker images to use as base name for tags
           images: ${{ env.images }}
-          # generate Docker tags based on the following events/attributes
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}
             type=edge,branch=master
             type=ref,event=branch
             type=sha
-          flavor: latest=auto #latest will point to last semver version (stable)
+          flavor: latest=auto
 
-      # Prepare for multi-arch
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
         with:
@@ -124,14 +119,14 @@ jobs:
           driver-opts: image=moby/buildkit:master
 
       - name: Login to DockerHub
-        if: env.has_docker_token == 'true' # secrets not available in PRs
+        if: env.has_docker_token == 'true'
         uses: docker/login-action@v2
         with:
-          username: abeltramo
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Login to GitHub Container Registry
-        if: env.has_github_token == 'true' # secrets not available in PRs
+        if: env.has_github_token == 'true'
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
