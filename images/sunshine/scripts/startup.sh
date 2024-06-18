@@ -9,6 +9,10 @@ gow_log "Waiting for X Server $DISPLAY to be available"
 LOG_LEVEL=${LOG_LEVEL:-INFO}
 gow_log "Starting sunshine with DISPLAY=${DISPLAY} and LOG_LEVEL=${LOG_LEVEL}"
 
+# Start PulseAudio
+gow_log "Starting PulseAudio"
+pulseaudio --start
+
 mkdir -p "$HOME/sunshine/" "$HOME/.config/sunshine/"
 cp -u /cfg/sunshine.conf "$HOME/sunshine/sunshine.conf"
 cp -u /cfg/apps.json "$HOME/sunshine/apps.json"
