@@ -49,5 +49,5 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            BASE_APP_IMAGE=ubuntu:24.04
             BASE_IMAGE=ubuntu:24.04
+            BASE_APP_IMAGE=ubuntu:24.04
